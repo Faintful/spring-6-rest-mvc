@@ -18,6 +18,14 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    @PutMapping("/{customerId}")
+    public ResponseEntity updateById(@PathVariable("customerId") UUID uuid, @RequestBody Customer customer) {
+        customerService.updateById(uuid, customer);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Thing", customer.getId().toString());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).headers(headers).body("Nice");
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Customer> handlePost(@RequestBody Customer customer) {
         Customer savedCustomer = customerService.saveNewCustomer(customer);
