@@ -81,6 +81,7 @@ public class BeerServiceImpl implements BeerService {
                 .quantityOnHand(beer.getQuantityOnHand())
                 .upc(beer.getUpc())
                 .price(beer.getPrice())
+                .version(beer.getVersion())
                 .build();
         beerMap.put(savedBeer.getId(), savedBeer);
         return savedBeer;
