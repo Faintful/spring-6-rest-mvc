@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -19,6 +20,12 @@ import java.util.UUID;
 @RequestMapping("/api/v1/beer") // Equivalent to: @RequestMapping(path = "/api/v1/beer")
 public class BeerController {
     private final BeerService beerService;
+
+    @PatchMapping("/{beerId}")
+    public ResponseEntity patchById(@PathVariable("beerId") UUID uuid, @RequestBody Beer beer) {
+        Optional<Beer> patchedBeer = beerService.patchBeer(uuid, beer);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(patchedBeer);
+    }
 
     @DeleteMapping("/{beerId}")
     public ResponseEntity deleteById(@PathVariable("beerId") UUID uuid) {
