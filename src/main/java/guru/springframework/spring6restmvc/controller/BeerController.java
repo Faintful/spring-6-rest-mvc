@@ -20,6 +20,12 @@ import java.util.UUID;
 public class BeerController {
     private final BeerService beerService;
 
+    @DeleteMapping("/{beerId}")
+    public ResponseEntity deleteById(@PathVariable("beerId") UUID uuid) {
+        beerService.deleteById(uuid);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     @PutMapping("/{beerId}")
     public ResponseEntity updateById(@PathVariable("beerId") UUID uuid, @RequestBody Beer beer) {
         beerService.updateBeer(uuid, beer);
