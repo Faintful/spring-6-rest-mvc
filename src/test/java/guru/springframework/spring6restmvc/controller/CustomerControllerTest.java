@@ -42,7 +42,24 @@ class CustomerControllerTest {
     }
 
     @Test
-    void listCustomers() {
+    void listCustomers() throws Exception {
+        //ARRANGE
+        given(customerService.listCustomers()).willReturn(customerServiceImpl.listCustomers());
+        MockHttpServletRequestBuilder mockRequest = get("/api/v1/customer").accept(MediaType.APPLICATION_JSON);
+
+        //ACT
+        ResultActions resultActions = mockMvc.perform(mockRequest)
+
+        //ASSERT
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()", is(3)));
+
+        //log
+        MvcResult result = resultActions.andReturn();
+        String jsonResponse = result.getResponse().getContentAsString();
+        log.info(jsonResponse);
+
     }
 
     @Test
