@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.controller;
 import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.services.BeerService;
 import guru.springframework.spring6restmvc.services.BeerServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
@@ -20,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 @WebMvcTest(BeerController.class)
 class BeerControllerTest {
 
@@ -38,13 +42,26 @@ class BeerControllerTest {
 
     @Test
     void listBeers() throws Exception {
+        // Configure the object that has been marked with @MockBean
         given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
 
-        mockMvc.perform(get("/api/v1/beer")
+        // Make a "fake" HTTP call that will invoke the mock object and save it to a ResultActions object
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/beer")
+                // Set the media type header of the fake HTTP request
                         .accept(MediaType.APPLICATION_JSON))
+                // Then assert with andExpect() methods
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(3)));
+
+        // Convert the ResultActions object into object MVCResult
+        MvcResult result = resultActions.andReturn();
+
+        // Convert the JSON response to a string
+        String jsonResponse = result.getResponse().getContentAsString();
+
+        // Log the JSON response with Slf4j
+        log.info("JSON response: {}", jsonResponse);
     }
 
     @Test
