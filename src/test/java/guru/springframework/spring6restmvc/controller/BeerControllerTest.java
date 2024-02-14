@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.controller;
 import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.services.BeerService;
 import guru.springframework.spring6restmvc.services.BeerServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,20 +26,34 @@ class BeerControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    BeerServiceImpl beerServiceImpl;
+
+    @BeforeEach
+    void setUp() {
+        beerServiceImpl = new BeerServiceImpl();
+    }
+
     @MockBean
     BeerService beerService;
 
-    BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
+    @Test
+    void listBeers() throws Exception {
+        given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
+
+        mockMvc.perform(get("/api/v1/beer")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()", is(3)));
+    }
 
     @Test
     void getBeerById() throws Exception {
         Beer testBeer = beerServiceImpl.listBeers().get(0);
 
-//        given(beerService.getBeerByID(any(UUID.class))).willReturn(testBeer);
         given(beerService.getBeerByID(testBeer.getId())).willReturn(testBeer);
 
         mockMvc.perform(get("/api/v1/beer/" +
-//                        UUID.randomUUID().toString()
                         testBeer.getId().toString())
                         .accept(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk())
