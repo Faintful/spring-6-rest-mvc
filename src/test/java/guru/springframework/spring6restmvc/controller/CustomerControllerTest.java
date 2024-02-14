@@ -1,0 +1,75 @@
+package guru.springframework.spring6restmvc.controller;
+
+import guru.springframework.spring6restmvc.model.Customer;
+import guru.springframework.spring6restmvc.services.CustomerService;
+import guru.springframework.spring6restmvc.services.CustomerServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@Slf4j
+@WebMvcTest(CustomerController.class)
+class CustomerControllerTest {
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @MockBean
+    CustomerService customerService;
+
+    CustomerServiceImpl customerServiceImpl;
+
+    @BeforeEach
+    void setUp() {
+        customerServiceImpl = new CustomerServiceImpl();
+    }
+
+    @Test
+    void listCustomers() {
+    }
+
+    @Test
+    void getCustomerById() throws Exception {
+
+        // Arrange
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+
+        MockHttpServletRequestBuilder mockRequest = get("/api/v1/customer/" + customer.getId().toString()).accept(MediaType.APPLICATION_JSON);
+
+        given(customerService.getCustomerById(customer.getId())).willReturn(customer);
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(mockRequest)
+
+        // Assert
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(customer.getName())));
+
+        // Capture JSON response as an MvcResult
+        MvcResult result = resultActions.andReturn();
+
+        // Convert the JSON response into a string
+        String jsonResponse = result.getResponse().getContentAsString();
+
+        // Log the response
+        log.info(jsonResponse);
+    }
+}
