@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.services.BeerService;
@@ -14,10 +15,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,6 +46,33 @@ class BeerControllerTest {
 
     @MockBean
     BeerService beerService;
+
+    @Test
+    void handlePost() throws Exception {
+        //ARRANGE
+        Beer testBeer = beerServiceImpl.listBeers().get(0);
+        testBeer.setId(null);
+        testBeer.setVersion(null);
+
+        given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
+        MockHttpServletRequestBuilder mockPostRequest = post("/api/v1/beer")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testBeer));
+        //ACT
+        ResultActions resultActions = mockMvc.perform(mockPostRequest)
+
+                //ASSERT
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header().exists("Location"));
+//                .andExpect(jsonPath("$.beerName", is("Sunshine City")));
+
+        //LOG
+        MvcResult mvcResult = resultActions.andReturn();
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        log.info(jsonResponse);
+    }
 
     @Test
     void listBeers() throws Exception {
