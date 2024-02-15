@@ -19,8 +19,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,6 +46,24 @@ class BeerControllerTest {
 
     @MockBean
     BeerService beerService;
+
+    @Test
+    void updateById() throws Exception {
+        //ARRANGE
+        Beer testBeer = beerServiceImpl.listBeers().get(0);
+        String requestBody = objectMapper.writeValueAsString(testBeer);
+        MockHttpServletRequestBuilder mockPutRequest = put("/api/v1/beer/" + testBeer.getId().toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody);
+        //ACT
+        ResultActions resultActions = mockMvc.perform(mockPutRequest)
+        //ASSERT
+                .andExpect(status().isNoContent());
+        verify(beerService).updateBeer(any(UUID.class), any(Beer.class));
+        //LOG
+        log.info(requestBody);
+    }
 
     @Test
     void handlePost() throws Exception {
