@@ -8,6 +8,7 @@ import guru.springframework.spring6restmvc.services.BeerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -52,12 +53,17 @@ class BeerControllerTest {
         //ARRANGE
         Beer testBeer = beerServiceImpl.listBeers().get(0);
         MockHttpServletRequestBuilder mockDeleteRequest = delete("/api/v1/beer/" + testBeer.getId().toString());
+        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
         //ACT
         // A delete request has no content, so I am not going to add content-type headers. I'm also not expecting a response, so I'll also omit accept headers
         mockMvc.perform(mockDeleteRequest)
         //ASSERT
                 .andExpect(status().isNoContent());
-        verify(beerService).deleteById(any(UUID.class));
+        // Verifies that the mock object's (beerService) deleteById() method was called
+        // Additionally, captures the UUID being passed into deleteById() and returns it. Which means that verify() will always pass as long as deleteById() is indeed called, however, this is a necessary step to capturing that value and then asserting against it.
+        verify(beerService).deleteById(uuidArgumentCaptor.capture());
+        UUID capturedUUID = uuidArgumentCaptor.getValue();
+        assertEquals(testBeer.getId(), capturedUUID);
         //LOG
         // Actually logs nothing useful
         log.info(objectMapper.writeValueAsString(mockDeleteRequest));
