@@ -48,6 +48,22 @@ class BeerControllerTest {
     BeerService beerService;
 
     @Test
+    void deleteById() throws Exception {
+        //ARRANGE
+        Beer testBeer = beerServiceImpl.listBeers().get(0);
+        MockHttpServletRequestBuilder mockDeleteRequest = delete("/api/v1/beer/" + testBeer.getId().toString());
+        //ACT
+        // A delete request has no content, so I am not going to add content-type headers. I'm also not expecting a response, so I'll also omit accept headers
+        mockMvc.perform(mockDeleteRequest)
+        //ASSERT
+                .andExpect(status().isNoContent());
+        verify(beerService).deleteById(any(UUID.class));
+        //LOG
+        // Actually logs nothing useful
+        log.info(objectMapper.writeValueAsString(mockDeleteRequest));
+    }
+
+    @Test
     void updateById() throws Exception {
         //ARRANGE
         Beer testBeer = beerServiceImpl.listBeers().get(0);
