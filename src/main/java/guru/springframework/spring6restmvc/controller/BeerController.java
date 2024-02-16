@@ -59,4 +59,10 @@ public class BeerController {
         log.debug("Get Beer By ID - In Controller");
         return beerService.getBeerByID(beerId);
     }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity handleNotFoundException() {
+        System.out.println("In NotFoundException handler");
+        return ResponseEntity.notFound().build();
+    }
 }
