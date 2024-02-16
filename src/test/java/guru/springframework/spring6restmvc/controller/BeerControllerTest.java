@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,6 +24,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -47,6 +51,34 @@ class BeerControllerTest {
 
     @MockBean
     BeerService beerService;
+
+    @Captor
+    ArgumentCaptor<Beer> beerArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Test
+    void patchById() throws Exception {
+        //ARRANGE
+        Beer testBeer = beerServiceImpl.listBeers().get(0);
+        Map<String, Object> beerMap = new HashMap<>();
+        beerMap.put("beerName", "Ratchet");
+        MockHttpServletRequestBuilder mockPatchRequest = patch("/api/v1/beer/" + testBeer.getId().toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerMap));
+        //ACT
+        mockMvc.perform(mockPatchRequest)
+                //ASSERT
+                .andExpect(status().isNoContent());
+        verify(beerService).patchBeer(uuidArgumentCaptor.capture(), beerArgumentCaptor.capture());
+        assertEquals(testBeer.getId(), uuidArgumentCaptor.getValue());
+        assertEquals(beerMap.get("beerName"), beerArgumentCaptor.getValue().getBeerName());
+        //LOG
+        // objectMapper in conjunction with the captor was a good choice to get better information out of the object being passed
+        log.info(objectMapper.writeValueAsString(beerArgumentCaptor.getValue()));
+    }
 
     @Test
     void deleteById() throws Exception {
