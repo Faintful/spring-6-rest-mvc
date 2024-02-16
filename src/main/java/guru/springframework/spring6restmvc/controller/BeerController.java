@@ -60,9 +60,4 @@ public class BeerController {
         return beerService.getBeerByID(beerId);
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity handleNotFoundException() {
-        System.out.println("In NotFoundException handler");
-        return ResponseEntity.notFound().build();
-    }
 }
