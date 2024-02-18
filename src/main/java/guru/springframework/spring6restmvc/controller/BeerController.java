@@ -1,6 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
-import guru.springframework.spring6restmvc.model.Beer;
+import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.services.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +23,8 @@ public class BeerController {
     private final BeerService beerService;
 
     @PatchMapping(BEER_PATH_ID)
-    public ResponseEntity patchById(@PathVariable("beerId") UUID uuid, @RequestBody Beer beer) {
-        Optional<Beer> patchedBeer = beerService.patchBeer(uuid, beer);
+    public ResponseEntity patchById(@PathVariable("beerId") UUID uuid, @RequestBody BeerDTO beerDTO) {
+        Optional<BeerDTO> patchedBeer = beerService.patchBeer(uuid, beerDTO);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(patchedBeer);
     }
 
@@ -35,29 +35,29 @@ public class BeerController {
     }
 
     @PutMapping(BEER_PATH_ID)
-    public ResponseEntity updateById(@PathVariable("beerId") UUID uuid, @RequestBody Beer beer) {
-        beerService.updateBeer(uuid, beer);
+    public ResponseEntity updateById(@PathVariable("beerId") UUID uuid, @RequestBody BeerDTO beerDTO) {
+        beerService.updateBeer(uuid, beerDTO);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping(BEER_PATH) // Equivalent to: @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Beer> handlePost(@RequestBody Beer beer) {
-        Beer savedBeer = beerService.saveNewBeer(beer);
+    public ResponseEntity<BeerDTO> handlePost(@RequestBody BeerDTO beerDTO) {
+        BeerDTO savedBeerDTO = beerService.saveNewBeer(beerDTO);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/beer/" + savedBeer.getId().toString());
-        return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(savedBeer); // Allows higher cutomizability in HTTP response as opposed to @ResponseBody
+        headers.add("Location", "/api/v1/beerDTO/" + savedBeerDTO.getId().toString());
+        return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(savedBeerDTO); // Allows higher cutomizability in HTTP response as opposed to @ResponseBody
         // return new ResponseEntity(HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = BEER_PATH)
-    public List<Beer> listBeers() {
+    public List<BeerDTO> listBeers() {
         log.debug("Get a List of Beers - In Controller");
         return beerService.listBeers();
     }
 
     @RequestMapping(method = RequestMethod.GET, path = BEER_PATH_ID)
-    public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
-        log.debug("Get Beer By ID - In Controller");
+    public BeerDTO getBeerById(@PathVariable("beerId") UUID beerId) {
+        log.debug("Get BeerDTO By ID - In Controller");
         return beerService.getBeerByID(beerId).orElseThrow(NotFoundException::new);
     }
 

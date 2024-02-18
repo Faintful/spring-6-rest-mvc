@@ -1,13 +1,12 @@
 package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import guru.springframework.spring6restmvc.model.Customer;
+import guru.springframework.spring6restmvc.model.CustomerDTO;
 import guru.springframework.spring6restmvc.services.CustomerService;
 import guru.springframework.spring6restmvc.services.CustomerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,7 +20,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -70,11 +68,11 @@ class CustomerControllerTest {
     void getCustomerById() throws Exception {
 
         // Arrange
-        Customer customer = customerServiceImpl.listCustomers().get(0);
+        CustomerDTO customerDTO = customerServiceImpl.listCustomers().get(0);
 
-        MockHttpServletRequestBuilder mockRequest = get("/api/v1/customer/" + customer.getId().toString()).accept(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder mockRequest = get("/api/v1/customerDTO/" + customerDTO.getId().toString()).accept(MediaType.APPLICATION_JSON);
 
-        given(customerService.getCustomerById(customer.getId())).willReturn(customer);
+        given(customerService.getCustomerById(customerDTO.getId())).willReturn(customerDTO);
 
         // Act
         ResultActions resultActions = mockMvc.perform(mockRequest)
@@ -82,7 +80,7 @@ class CustomerControllerTest {
         // Assert
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(customer.getName())));
+                .andExpect(jsonPath("$.name", is(customerDTO.getName())));
 
         // Capture JSON response as an MvcResult
         MvcResult result = resultActions.andReturn();
