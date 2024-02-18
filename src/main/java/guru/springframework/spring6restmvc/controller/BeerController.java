@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,29 +16,31 @@ import java.util.UUID;
 @Slf4j
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/beer") // Equivalent to: @RequestMapping(path = "/api/v1/beer")
+//@RequestMapping(BeerController.BEER_PATH) // Equivalent to: @RequestMapping(path = "/api/v1/beer")
 public class BeerController {
+    public static final String BEER_PATH = "/api/v1/beer";
+    public static final String BEER_PATH_ID = BEER_PATH + "/{beerId}"; // Should be just "/{beerId}"
     private final BeerService beerService;
 
-    @PatchMapping("/{beerId}")
+    @PatchMapping(BEER_PATH_ID)
     public ResponseEntity patchById(@PathVariable("beerId") UUID uuid, @RequestBody Beer beer) {
         Optional<Beer> patchedBeer = beerService.patchBeer(uuid, beer);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(patchedBeer);
     }
 
-    @DeleteMapping("/{beerId}")
+    @DeleteMapping(BEER_PATH_ID)
     public ResponseEntity deleteById(@PathVariable("beerId") UUID uuid) {
         beerService.deleteById(uuid);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PutMapping("/{beerId}")
+    @PutMapping(BEER_PATH_ID)
     public ResponseEntity updateById(@PathVariable("beerId") UUID uuid, @RequestBody Beer beer) {
         beerService.updateBeer(uuid, beer);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping // Equivalent to: @RequestMapping(method = RequestMethod.POST)
+    @PostMapping(BEER_PATH) // Equivalent to: @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Beer> handlePost(@RequestBody Beer beer) {
         Beer savedBeer = beerService.saveNewBeer(beer);
         HttpHeaders headers = new HttpHeaders();
@@ -48,13 +49,13 @@ public class BeerController {
         // return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, path = BEER_PATH)
     public List<Beer> listBeers() {
         log.debug("Get a List of Beers - In Controller");
         return beerService.listBeers();
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/{beerId}")
+    @RequestMapping(method = RequestMethod.GET, path = BEER_PATH_ID)
     public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
         log.debug("Get Beer By ID - In Controller");
         return beerService.getBeerByID(beerId);

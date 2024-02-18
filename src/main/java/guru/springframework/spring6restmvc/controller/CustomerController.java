@@ -13,12 +13,14 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/customer")
+@RequestMapping(CustomerController.CUSTOMER_PATH)
 public class CustomerController {
 
+    public static final String CUSTOMER_PATH = "/api/v1/customer";
+    public static final String CUSTOMER_PATH_ID = "/{customerId}";
     private final CustomerService customerService;
 
-    @PutMapping("/{customerId}")
+    @PutMapping(CUSTOMER_PATH_ID)
     public ResponseEntity updateById(@PathVariable("customerId") UUID uuid, @RequestBody Customer customer) {
         customerService.updateById(uuid, customer);
         HttpHeaders headers = new HttpHeaders();
@@ -39,7 +41,7 @@ public class CustomerController {
         return customerService.listCustomers();
     }
 
-    @RequestMapping(path = "/{customerId}", method = RequestMethod.GET)
+    @RequestMapping(path = CUSTOMER_PATH_ID, method = RequestMethod.GET)
     public Customer getCustomerById(@PathVariable("customerId") UUID uuid) {
         return customerService.getCustomerById(uuid);
     }

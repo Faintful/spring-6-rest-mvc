@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
@@ -35,6 +37,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @WebMvcTest(BeerController.class)
 class BeerControllerTest {
+
+    //TODO: Tests are ignoring the base URI mapping of the BeerController, I had to comment out the @RequestMapping at the class level and modify BEER_PATH_ID as a result. Fix this!!!!!
 
     @Autowired
     MockMvc mockMvc;
@@ -61,7 +65,8 @@ class BeerControllerTest {
     @Test
     void getBeerByIdNotFound() throws Exception {
         given(beerService.getBeerByID(any(UUID.class))).willThrow(NotFoundException.class);
-        MockHttpServletRequestBuilder mockGet = get("/api/v1/beer/" + UUID.randomUUID().toString());
+        MockHttpServletRequestBuilder mockGet = MockMvcRequestBuilders.get(BeerController.BEER_PATH_ID, UUID.randomUUID());
+        log.info("Request URI: " + mockGet.buildRequest(new MockServletContext()).getRequestURI());
         mockMvc.perform(mockGet)
                 .andExpect(status().isNotFound());
     }
@@ -72,10 +77,17 @@ class BeerControllerTest {
         Beer testBeer = beerServiceImpl.listBeers().get(0);
         Map<String, Object> beerMap = new HashMap<>();
         beerMap.put("beerName", "Ratchet");
-        MockHttpServletRequestBuilder mockPatchRequest = patch("/api/v1/beer/" + testBeer.getId().toString())
+        /*MockHttpServletRequestBuilder mockPatchRequest = patch(BeerController.BEER_PATH_ID, testBeer.getId().toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerMap));*/
+        //Opt to use MockMvcRequestBuilders to create mock HTTP requests from now on
+        MockHttpServletRequestBuilder mockPatchRequest = MockMvcRequestBuilders
+                .patch(BeerController.BEER_PATH_ID, testBeer.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beerMap));
+        log.info("Request URI: " + mockPatchRequest.buildRequest(new MockServletContext()).getRequestURI());
         //ACT
         mockMvc.perform(mockPatchRequest)
                 //ASSERT
@@ -92,7 +104,7 @@ class BeerControllerTest {
     void deleteById() throws Exception {
         //ARRANGE
         Beer testBeer = beerServiceImpl.listBeers().get(0);
-        MockHttpServletRequestBuilder mockDeleteRequest = delete("/api/v1/beer/" + testBeer.getId().toString());
+        MockHttpServletRequestBuilder mockDeleteRequest = MockMvcRequestBuilders.delete(BeerController.BEER_PATH_ID, testBeer.getId());
         ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
         //ACT
         // A delete request has no content, so I am not going to add content-type headers. I'm also not expecting a response, so I'll also omit accept headers
@@ -114,7 +126,7 @@ class BeerControllerTest {
         //ARRANGE
         Beer testBeer = beerServiceImpl.listBeers().get(0);
         String requestBody = objectMapper.writeValueAsString(testBeer);
-        MockHttpServletRequestBuilder mockPutRequest = put("/api/v1/beer/" + testBeer.getId().toString())
+        MockHttpServletRequestBuilder mockPutRequest = MockMvcRequestBuilders.put(BeerController.BEER_PATH_ID, testBeer.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody);
@@ -135,7 +147,7 @@ class BeerControllerTest {
         testBeer.setVersion(null);
 
         given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
-        MockHttpServletRequestBuilder mockPostRequest = post("/api/v1/beer")
+        MockHttpServletRequestBuilder mockPostRequest = MockMvcRequestBuilders.post(BeerController.BEER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testBeer));
@@ -160,7 +172,7 @@ class BeerControllerTest {
         given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
 
         // Make a "fake" HTTP call that will invoke the mock object and save it to a ResultActions object
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/beer")
+        ResultActions resultActions = mockMvc.perform(get(BeerController.BEER_PATH)
                 // Set the media type header of the fake HTTP request
                         .accept(MediaType.APPLICATION_JSON))
                 // Then assert with andExpect() methods
@@ -184,7 +196,7 @@ class BeerControllerTest {
 
         given(beerService.getBeerByID(testBeer.getId())).willReturn(testBeer);
 
-        mockMvc.perform(get("/api/v1/beer/" +
+        mockMvc.perform(get(BeerController.BEER_PATH_ID,
                         testBeer.getId().toString())
                         .accept(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk())
