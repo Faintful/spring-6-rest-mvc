@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -64,7 +65,7 @@ class BeerControllerTest {
 
     @Test
     void getBeerByIdNotFound() throws Exception {
-        given(beerService.getBeerByID(any(UUID.class))).willThrow(NotFoundException.class);
+        given(beerService.getBeerByID(any(UUID.class))).willReturn(Optional.empty());
         MockHttpServletRequestBuilder mockGet = MockMvcRequestBuilders.get(BeerController.BEER_PATH_ID, UUID.randomUUID());
         log.info("Request URI: " + mockGet.buildRequest(new MockServletContext()).getRequestURI());
         mockMvc.perform(mockGet)
@@ -194,7 +195,7 @@ class BeerControllerTest {
     void getBeerById() throws Exception {
         Beer testBeer = beerServiceImpl.listBeers().get(0);
 
-        given(beerService.getBeerByID(testBeer.getId())).willReturn(testBeer);
+        given(beerService.getBeerByID(testBeer.getId())).willReturn(Optional.of(testBeer));
 
         mockMvc.perform(get(BeerController.BEER_PATH_ID,
                         testBeer.getId().toString())
