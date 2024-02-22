@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 
-//@Component
+@Component // Needed for integration testing otherwise H2 will not contain any data
 @RequiredArgsConstructor
 public class BootstrapData implements CommandLineRunner {
 
