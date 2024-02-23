@@ -17,7 +17,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// TODO: What is this?
+// AssertJ specialized assertions. More intuitive.
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
