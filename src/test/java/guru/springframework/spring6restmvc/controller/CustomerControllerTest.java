@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -72,7 +74,7 @@ class CustomerControllerTest {
 
         MockHttpServletRequestBuilder mockRequest = get("/api/v1/customerDTO/" + customerDTO.getId().toString()).accept(MediaType.APPLICATION_JSON);
 
-        given(customerService.getCustomerById(customerDTO.getId())).willReturn(customerDTO);
+        given(customerService.getCustomerById(customerDTO.getId())).willReturn(Optional.of(customerDTO));
 
         // Act
         ResultActions resultActions = mockMvc.perform(mockRequest)
