@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,17 +32,31 @@ class BeerControllerIT {
     @Autowired
     BeerRepository beerRepository;
 
+    @Test //UP = Unhappy Path
+    void getBeerByIdUP() {
+        //Assert
+        assertThrows(NotFoundException.class, () -> {
+            beerController.getBeerById(UUID.randomUUID());});
+    }
+
+    @Test //HP = Happy Path
+    void getBeerByIdHP() {
+        //Arrange
+        UUID beerUUID = beerRepository.findAll().get(0).getId();
+        //Assert
+        assertNotNull(beerController.getBeerById(beerUUID));
+    }
+
     @Test
-    @Order(2)
     void listBeers() {
+        //Arrange
         List<BeerDTO> beerDTOS = beerController.listBeers();
         log.info(beerDTOS.toString());
-//        assertEquals(beerDTOS.size(), 3);
+        //Assert
         assertThat(beerDTOS.size()).isEqualTo(3);
     }
 
     @Transactional
-//    @Rollback
     @Test
     @Order(1)
     void listEmptyBeers() {
