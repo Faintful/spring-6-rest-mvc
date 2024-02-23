@@ -47,4 +47,14 @@ class CustomerControllerIT {
         customerRepository.deleteAll();
         assertThat(customerRepository.count()).isEqualTo(0);
     }
+
+    @Test
+    void getCustomerByIdHP() {
+        Customer customer = customerRepository.findAll().get(0);
+        log.info(customer.toString());
+        CustomerDTO customerDTO = customerController.getCustomerById(customer.getId());
+        log.info(customerDTO.toString());
+        assertThat(customerDTO.getId()).isEqualTo(customer.getId());
+    }
+
 }
