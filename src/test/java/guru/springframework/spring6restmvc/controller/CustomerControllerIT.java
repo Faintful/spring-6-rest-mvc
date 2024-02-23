@@ -3,7 +3,6 @@ package guru.springframework.spring6restmvc.controller;
 import guru.springframework.spring6restmvc.entities.Customer;
 import guru.springframework.spring6restmvc.model.CustomerDTO;
 import guru.springframework.spring6restmvc.repositories.CustomerRepository;
-import guru.springframework.spring6restmvc.services.CustomerService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,11 +25,11 @@ class CustomerControllerIT {
     CustomerRepository customerRepository;
 
     @Autowired
-    CustomerService customerService;
+    CustomerController customerController;
 
     @Test
     void listCustomerHP() {
-        List<CustomerDTO> customerDTOS = customerService.listCustomers();
+        List<CustomerDTO> customerDTOS = customerController.listCustomers();
         customerDTOS.forEach((customerDTO) -> {
             log.info(customerDTO.toString());
         });
