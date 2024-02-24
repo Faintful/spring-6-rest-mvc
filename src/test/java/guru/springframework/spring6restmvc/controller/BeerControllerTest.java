@@ -130,6 +130,7 @@ class BeerControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody);
+        given(beerService.updateBeer(any(), any())).willReturn(Optional.of(testBeerDTO));
         //ACT
         ResultActions resultActions = mockMvc.perform(mockPutRequest)
         //ASSERT
