@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
+import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
 import jakarta.transaction.Transactional;
@@ -10,7 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +33,25 @@ class BeerControllerIT {
 
     @Autowired
     BeerRepository beerRepository;
+
+    @Transactional
+    @Test
+    void saveNewBeerTest() {
+        BeerDTO beerDTO = BeerDTO.builder()
+                .beerName("New Beer")
+                .build();
+
+        ResponseEntity<BeerDTO> responseEntity = beerController.handlePost(beerDTO);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.valueOf(201));
+        assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
+
+        String[] locationUUID = responseEntity.getHeaders().getLocation().getPath().split("/");
+        UUID savedUUID = UUID.fromString(locationUUID[4]);
+
+        Beer beer = beerRepository.findById(savedUUID).get();
+        assertThat(beer).isNotNull();
+    }
 
     @Test //UP = Unhappy Path
     void getBeerByIdUP() {
