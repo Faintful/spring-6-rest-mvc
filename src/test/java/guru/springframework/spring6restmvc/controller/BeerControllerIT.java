@@ -40,6 +40,11 @@ class BeerControllerIT {
     BeerMapper beerMapper;
 
     @Test
+    void deleteByIdUP() {
+        assertThrows(NotFoundException.class, () -> beerController.deleteById(UUID.randomUUID()));
+    }
+
+    @Test
     void deleteByIdHP() {
         UUID uuid = beerRepository.findAll().get(0).getId();
         Optional<Beer> beerBefore = beerRepository.findById(uuid);

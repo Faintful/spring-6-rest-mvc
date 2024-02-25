@@ -106,6 +106,7 @@ class BeerControllerTest {
         BeerDTO testBeerDTO = beerServiceImpl.listBeers().get(0);
         MockHttpServletRequestBuilder mockDeleteRequest = MockMvcRequestBuilders.delete(BeerController.BEER_PATH_ID, testBeerDTO.getId());
         ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        given(beerService.deleteById(any())).willReturn(true);
         //ACT
         // A delete request has no content, so I am not going to add content-type headers. I'm also not expecting a response, so I'll also omit accept headers
         mockMvc.perform(mockDeleteRequest)
