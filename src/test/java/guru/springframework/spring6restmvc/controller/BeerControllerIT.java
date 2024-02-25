@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,12 +40,30 @@ class BeerControllerIT {
     BeerMapper beerMapper;
 
     @Test
+    void deleteByIdHP() {
+        UUID uuid = beerRepository.findAll().get(0).getId();
+        Optional<Beer> beerBefore = beerRepository.findById(uuid);
+        beerBefore.ifPresent(beer -> log.info(beer.toString()));
+
+        beerController.deleteById(uuid);
+
+        Optional<Beer> beerAfter = beerRepository.findById(uuid);
+        beerAfter.ifPresentOrElse(
+                beer -> log.info(beer.toString()),
+                () -> log.info("Empty beer after deletion")
+        );
+
+        assertThat(beerRepository.findById(uuid)).isEmpty();
+    }
+
+    @Test
     void updateBeerUP() {
         assertThrows(NotFoundException.class, () -> {
             beerController.updateById(UUID.randomUUID(), BeerDTO.builder().build());
         });
     }
 
+    @Transactional
     @Test
     void updateBeerHP() {
         Beer beer = beerRepository.findAll().get(0);
