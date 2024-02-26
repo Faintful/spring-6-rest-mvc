@@ -79,21 +79,13 @@ class BeerControllerTest {
         //TODO: Test passes without this
 //        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(BeerDTO.builder().build());
         //Act
-        mockMvc.perform(mockHttpServletRequestBuilder)
+        MvcResult result = mockMvc.perform(mockHttpServletRequestBuilder)
                 //Assert
-
-                // AI generated snippet
-                // Passing LAMBDA to simultaneously log information
-                // Possible because ResultMatcher is a functional interface
-                /*.andExpect(result -> {
-                    String content = result.getResponse().getContentAsString();
-                    String beerName = JsonPath.read(content, "$.beerName");
-                    log.info("Extracted beer name: {}", beerName);
-                    assertThat(beerName).isNull(); // Assuming you want to assert that beerName is null
-                })*/
                 .andExpect(jsonPath("$.beerName").doesNotExist())
-                .andExpect(status().isBadRequest());
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        //Log
+                log.info(result.getResponse().getContentAsString());
     }
 
     @Test
