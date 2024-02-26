@@ -1,6 +1,9 @@
 package guru.springframework.spring6restmvc.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.services.BeerService;
 import guru.springframework.spring6restmvc.services.BeerServiceImpl;
@@ -12,11 +15,13 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -33,6 +38,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @WebMvcTest(BeerController.class)
@@ -61,6 +67,34 @@ class BeerControllerTest {
 
     @Captor
     ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Test
+    void postBeerValidation() throws Exception {
+        //Arrange
+        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = MockMvcRequestBuilders
+                .post(BeerController.BEER_PATH)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(BeerDTO.builder().build()));
+        //TODO: Test passes without this
+//        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(BeerDTO.builder().build());
+        //Act
+        mockMvc.perform(mockHttpServletRequestBuilder)
+                //Assert
+
+                // AI generated snippet
+                // Passing LAMBDA to simultaneously log information
+                // Possible because ResultMatcher is a functional interface
+                /*.andExpect(result -> {
+                    String content = result.getResponse().getContentAsString();
+                    String beerName = JsonPath.read(content, "$.beerName");
+                    log.info("Extracted beer name: {}", beerName);
+                    assertThat(beerName).isNull(); // Assuming you want to assert that beerName is null
+                })*/
+                .andExpect(jsonPath("$.beerName").doesNotExist())
+                .andExpect(status().isBadRequest());
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
 
     @Test
     void getBeerByIdNotFound() throws Exception {
