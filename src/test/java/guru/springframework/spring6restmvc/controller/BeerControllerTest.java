@@ -8,6 +8,7 @@ import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.services.BeerService;
 import guru.springframework.spring6restmvc.services.BeerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.h2.store.Data;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -67,6 +69,30 @@ class BeerControllerTest {
 
     @Captor
     ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Test
+    void updateBeerValidation() throws Exception {
+        //Arrange
+        BeerDTO beerDTO = BeerDTO.builder()
+                .beerName("Clank")
+                .quantityOnHand(99)
+                .createdDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .build();
+        MockHttpServletRequestBuilder mockUpdate = MockMvcRequestBuilders
+                .put(BeerController.BEER_PATH_ID, UUID.randomUUID().toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerDTO));
+        given(beerService.updateBeer(any(UUID.class), any(BeerDTO.class))).willReturn(Optional.ofNullable(beerDTO));
+        //Act
+        MvcResult result = mockMvc.perform(mockUpdate)
+        //Assert
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.length()", is(4)))
+                .andReturn();
+        log.info(result.getResponse().getContentAsString());
+    }
 
     @Test
     void postBeerValidation() throws Exception {
