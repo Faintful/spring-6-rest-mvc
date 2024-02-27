@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.model.BeerDTO;
+import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.services.BeerService;
 import guru.springframework.spring6restmvc.services.BeerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,7 +103,14 @@ class BeerControllerTest {
                 .post(BeerController.BEER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(BeerDTO.builder().build()));
+                .content(objectMapper.writeValueAsString(BeerDTO.builder()
+                        .quantityOnHand(99)
+                        .createdDate(LocalDateTime.now())
+                        .updateDate(LocalDateTime.now())
+                        .price(BigDecimal.valueOf(34))
+                        .upc("asfawf")
+                        .beerStyle(BeerStyle.LAGER)
+                        .build()));
         //TODO: Test passes without this
 //        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(BeerDTO.builder().build());
         //Act
