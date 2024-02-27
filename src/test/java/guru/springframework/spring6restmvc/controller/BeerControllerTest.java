@@ -83,6 +83,7 @@ class BeerControllerTest {
                 //Assert
                 .andExpect(jsonPath("$.beerName").doesNotExist())
                 .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.length()", is(2)))
                 .andReturn();
         //Log
                 log.info(result.getResponse().getContentAsString());
