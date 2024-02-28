@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.repositories;
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,23 @@ class BeerRepositoryTest {
 
     @Autowired
     BeerRepository beerRepository;
+
+    @Transactional
+    @Test
+    void testSaveBeerNameTooLong() {
+        assertThrows(ConstraintViolationException.class, () -> {
+            Beer testBeer = Beer.builder()
+                    .beerName("fkaejfgkeasjgkaejakejkajegkajsegkjasekgaksegjaegasegjaejgaseguaseg")
+                    .beerStyle(BeerStyle.PALE_ALE)
+                    .upc("234234234234")
+                    .price(new BigDecimal("11.99"))
+                    .build();
+            log.info("Before persisting: " + testBeer.toString());
+            Beer beerSaved = beerRepository.save(testBeer);
+            log.info("After persisting: " + beerSaved.toString());
+            beerRepository.flush();
+        });
+    }
 
     @Transactional
     @Test
