@@ -44,6 +44,9 @@ public class BeerCSVRecord {
     private String count_y;
 
     @CsvBindByName
+    private String brewery;
+
+    @CsvBindByName
     private String city;
 
     @CsvBindByName
