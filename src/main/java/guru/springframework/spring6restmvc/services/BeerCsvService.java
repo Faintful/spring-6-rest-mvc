@@ -6,5 +6,5 @@ import java.io.File;
 import java.util.List;
 
 public interface BeerCsvService {
-    public List<BeerCSVRecord> convertCSV(File file);
+    List<BeerCSVRecord> convertCSV(File file);
 }
