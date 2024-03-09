@@ -17,7 +17,7 @@ import java.util.UUID;
 public class CustomerController {
 
     public static final String CUSTOMER_PATH = "/api/v1/customer";
-    public static final String CUSTOMER_PATH_ID = "/{customerId}";
+    public static final String CUSTOMER_PATH_ID = CUSTOMER_PATH + "/{customerId}";
     private final CustomerService customerService;
 
     @PutMapping(CUSTOMER_PATH_ID)

@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.bootstrap;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
 import guru.springframework.spring6restmvc.repositories.CustomerRepository;
 import guru.springframework.spring6restmvc.services.BeerCsvService;
+import guru.springframework.spring6restmvc.services.BeerCsvServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @DataJpaTest
-@Import(BeerCsvService.class)
+@Import(BeerCsvServiceImpl.class)
 class BootstrapDataTest {
 
     @Autowired
@@ -37,7 +38,7 @@ class BootstrapDataTest {
     void jpaTest() throws Exception {
         bootstrapData.run();
         log.info("Beer count: " + beerRepository.count());
-//        assertEquals(beerRepository.count(), 3);
-//        assertEquals(customerRepository.count(), 3);
+        assertEquals(beerRepository.count(), 2413);
+        assertEquals(customerRepository.count(), 3);
     }
 }

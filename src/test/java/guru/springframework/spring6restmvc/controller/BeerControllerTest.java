@@ -258,15 +258,18 @@ class BeerControllerTest {
     void getBeerById() throws Exception {
         BeerDTO testBeerDTO = beerServiceImpl.listBeers().get(0);
 
-        given(beerService.getBeerByID(testBeerDTO.getId())).willReturn(Optional.of(testBeerDTO));
+        given(beerService.getBeerByID(any(UUID.class))).willReturn(Optional.of(testBeerDTO));
 
-        mockMvc.perform(get(BeerController.BEER_PATH_ID,
-                        testBeerDTO.getId().toString())
-                        .accept(MediaType.APPLICATION_JSON))
+        MockHttpServletRequestBuilder mockRequest = get(BeerController.BEER_PATH_ID,
+                testBeerDTO.getId().toString())
+                .accept(MediaType.APPLICATION_JSON);
+
+        ResultActions resultActions = mockMvc.perform(mockRequest)
                         .andExpect(status().isOk())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andExpect(jsonPath("$.id", is(testBeerDTO.getId().toString())))
                         .andExpect(jsonPath("$.beerName", is(testBeerDTO.getBeerName())));
-        ;
+
+        log.info(resultActions.andReturn().getResponse().getContentAsString());
     }
 }

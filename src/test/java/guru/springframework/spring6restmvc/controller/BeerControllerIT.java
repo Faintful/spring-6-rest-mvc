@@ -125,7 +125,7 @@ class BeerControllerIT {
         List<BeerDTO> beerDTOS = beerController.listBeers();
         log.info(beerDTOS.toString());
         //Assert
-        assertThat(beerDTOS.size()).isEqualTo(3);
+        assertThat(beerDTOS.size()).isEqualTo(2413);
     }
 
     @Transactional
