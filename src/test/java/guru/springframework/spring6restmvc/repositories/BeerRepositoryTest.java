@@ -1,24 +1,36 @@
 package guru.springframework.spring6restmvc.repositories;
 
+import guru.springframework.spring6restmvc.bootstrap.BootstrapData;
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
+import guru.springframework.spring6restmvc.services.BeerCsvServiceImpl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @DataJpaTest
+@Import({BootstrapData.class, BeerCsvServiceImpl.class})
 class BeerRepositoryTest {
 
     @Autowired
     BeerRepository beerRepository;
+
+    @Test
+    void findAllByBeerNameIsLike() {
+        List<Beer> listOfBeers = beerRepository.findAllByBeerNameIsLikeIgnoreCase("%IPA%");
+        assertThat(listOfBeers.size()).isEqualTo(336);
+    }
 
     @Transactional
     @Test
