@@ -63,7 +63,7 @@ class BeerControllerIT {
         mockMvc.perform(mockGetBeers)
                 //Assert
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(100)));
+                .andExpect(jsonPath("$.size()", is(336)));
     }
 
     @Test
