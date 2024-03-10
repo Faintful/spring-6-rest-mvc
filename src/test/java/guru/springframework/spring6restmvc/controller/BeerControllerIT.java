@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.controller;
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
+import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 // AssertJ specialized assertions. More intuitive.
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,6 +56,13 @@ class BeerControllerIT {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
+    @Test
+    void tesListBeersByStyle() throws Exception {
+        mockMvc.perform(get(BeerController.BEER_PATH)
+                .queryParam("beerStyle", "LAGER"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(548)));
+    }
 
     @Test
     void testListBeersByName() throws Exception {
