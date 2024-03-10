@@ -130,7 +130,7 @@ class BeerControllerTest {
     @Test
     void patchById() throws Exception {
         //ARRANGE
-        BeerDTO testBeerDTO = beerServiceImpl.listBeers(null).get(0);
+        BeerDTO testBeerDTO = beerServiceImpl.listBeers(null, null).get(0);
         Map<String, Object> beerMap = new HashMap<>();
         beerMap.put("beerName", "Ratchet");
         /*MockHttpServletRequestBuilder mockPatchRequest = patch(BeerController.BEER_PATH_ID, testBeerDTO.getId().toString())
@@ -159,7 +159,7 @@ class BeerControllerTest {
     @Test
     void deleteById() throws Exception {
         //ARRANGE
-        BeerDTO testBeerDTO = beerServiceImpl.listBeers(null).get(0);
+        BeerDTO testBeerDTO = beerServiceImpl.listBeers(null, null).get(0);
         MockHttpServletRequestBuilder mockDeleteRequest = MockMvcRequestBuilders.delete(BeerController.BEER_PATH_ID, testBeerDTO.getId());
         ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
         given(beerService.deleteById(any())).willReturn(true);
@@ -181,7 +181,7 @@ class BeerControllerTest {
     @Test
     void updateById() throws Exception {
         //ARRANGE
-        BeerDTO testBeerDTO = beerServiceImpl.listBeers(null).get(0);
+        BeerDTO testBeerDTO = beerServiceImpl.listBeers(null, null).get(0);
         String requestBody = objectMapper.writeValueAsString(testBeerDTO);
         MockHttpServletRequestBuilder mockPutRequest = MockMvcRequestBuilders.put(BeerController.BEER_PATH_ID, testBeerDTO.getId())
                 .accept(MediaType.APPLICATION_JSON)
@@ -200,11 +200,11 @@ class BeerControllerTest {
     @Test
     void handlePost() throws Exception {
         //ARRANGE
-        BeerDTO testBeerDTO = beerServiceImpl.listBeers(null).get(0);
+        BeerDTO testBeerDTO = beerServiceImpl.listBeers(null, null).get(0);
         testBeerDTO.setId(null);
         testBeerDTO.setVersion(null);
 
-        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null).get(1));
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null).get(1));
         MockHttpServletRequestBuilder mockPostRequest = MockMvcRequestBuilders.post(BeerController.BEER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -227,7 +227,7 @@ class BeerControllerTest {
     @Test
     void listBeers() throws Exception {
         // Configure the object that has been marked with @MockBean
-        given(beerService.listBeers(null)).willReturn(beerServiceImpl.listBeers(null));
+        given(beerService.listBeers(null, null)).willReturn(beerServiceImpl.listBeers(null, null));
 
         // Make a "fake" HTTP call that will invoke the mock object and save it to a ResultActions object
         ResultActions resultActions = mockMvc.perform(get(BeerController.BEER_PATH)
@@ -250,7 +250,7 @@ class BeerControllerTest {
 
     @Test
     void getBeerById() throws Exception {
-        BeerDTO testBeerDTO = beerServiceImpl.listBeers(null).get(0);
+        BeerDTO testBeerDTO = beerServiceImpl.listBeers(null, null).get(0);
 
         given(beerService.getBeerByID(any(UUID.class))).willReturn(Optional.of(testBeerDTO));
 
